@@ -18,12 +18,12 @@ def setup_training(model, device, learning_rate=0.001):
     model = model.to(device)
     
     # Cross Entropy Loss for multi-class classification
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss() # Works well with weighted sampling for multi-class classification
     
     # Use Adam optimizer for the classifier parameters only
     # Only optimize parameters that require gradients
     optimizer = optim.Adam(
-        [p for p in model.parameters() if p.requires_grad],
+        [p for p in model.parameters() if p.requires_grad], # only optimize parameters that require gradient updates
         lr=learning_rate
     )
     
