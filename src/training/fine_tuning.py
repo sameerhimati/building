@@ -6,6 +6,7 @@ import copy
 import time
 import matplotlib.pyplot as plt
 import os
+import tqdm
 
 def freeze_model_backbone(model, freeze=True):
     """
@@ -209,9 +210,12 @@ def fine_tune_model(model, dataloaders, device, criterion=None,
             running_loss = 0.0
             running_corrects = 0
             total_samples = 0
+
+            # Create progress bar for this phase
+            pbar = tqdm(dataloaders[phase], desc=f'{phase.capitalize()}')
             
             # Iterate over data batches
-            for inputs, labels in dataloaders[phase]:
+            for inputs, labels in pbar:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 
@@ -231,9 +235,17 @@ def fine_tune_model(model, dataloaders, device, criterion=None,
                 
                 # Statistics
                 batch_size = inputs.size(0)
+                batch_loss = loss.item() * batch_size
+                batch_corrects = torch.sum(preds == labels.data).item()
                 running_loss += loss.item() * batch_size
                 running_corrects += torch.sum(preds == labels.data).item()
                 total_samples += batch_size
+
+                batch_acc = batch_corrects / batch_size
+                pbar.set_postfix({
+                    'loss': f'{batch_loss/batch_size:.4f}',
+                    'acc': f'{batch_acc:.4f}'
+                })
             
             epoch_loss = running_loss / total_samples
             epoch_acc = running_corrects / total_samples
