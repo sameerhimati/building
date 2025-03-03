@@ -22,12 +22,13 @@ st.set_page_config(
 )
 
 def find_model_paths():
-    """Find all available model paths."""
+    """Find all available model paths (local or remote)."""
     models = []
-    # Look in outputs directory
+    
+    # Look in outputs directory (local development)
     output_dir = "outputs"
     if os.path.exists(output_dir):
-        for run_dir in sorted(os.listdir(output_dir), reverse=True):  # Sort by name (newest first)
+        for run_dir in sorted(os.listdir(output_dir), reverse=True):
             run_path = os.path.join(output_dir, run_dir)
             if os.path.isdir(run_path):
                 # Check for fine-tuned model first
@@ -40,17 +41,49 @@ def find_model_paths():
                 if os.path.exists(base_model_path):
                     models.append((run_dir, base_model_path))
     
+    # Add remote models (for deployment)
+    # Example: models.append(("Production Model v1", "https://storage-url.com/model.pth"))
+    
+    # If no models found, add placeholder
+    if not models:
+        models.append(("Demo Mode - No models available", "demo"))
+    
     return models
 
-# Set up cache for model loading
+# Update load_model function to handle remote or missing models
 @st.cache_resource
 def load_model(model_path):
-    """Load the trained model from checkpoint."""
+    """Load the trained model from local path or remote URL."""
     device = torch.device("mps" if torch.backends.mps.is_available() else 
                          ("cuda" if torch.cuda.is_available() else "cpu"))
     
+    # Demo mode - return pretrained model
+    if model_path == "demo":
+        st.warning("⚠️ Running in demo mode with a pretrained model. Accuracy may be limited.")
+        num_classes = 45  # Your number of classes
+        model = create_efficientnet_model(num_classes, pretrained=True, freeze_backbone=False)
+        class_names = [f"Architectural Style {i+1}" for i in range(num_classes)]
+        return model, device, class_names
+    
+    # Remote URL
+    if model_path.startswith(("http://", "https://")):
+        st.info("Downloading model from remote location...")
+        # Download to temp file
+        import tempfile
+        import requests
+        
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            response = requests.get(model_path, stream=True)
+            response.raise_for_status()
+            for chunk in response.iter_content(chunk_size=8192):
+                tmp.write(chunk)
+            
+            checkpoint_path = tmp.name
+    else:
+        checkpoint_path = model_path
+    
     # Load checkpoint
-    checkpoint = torch.load(model_path, map_location=device)
+    checkpoint = torch.load(checkpoint_path, map_location=device)
     
     # Extract model state dict and class names
     if 'model_state_dict' in checkpoint:
