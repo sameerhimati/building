@@ -259,15 +259,14 @@ def main():
             st.info("No feedback collected yet. Use the feedback options after predictions to help improve the model.")
     
     # Display tabs for different input methods
-    tab1, tab2 = st.tabs(["Upload Image", "Take Photo"])
+    # tab1 = st.tabs(["Upload Image"])
     
-    with tab1:
-        # File uploader
-        uploaded_file = st.file_uploader(
-            "Upload an image of a building", 
-            type=["jpg", "jpeg", "png", "dng", "heic", "heif"]
-        )
-        image_file = uploaded_file
+    # File uploader
+    uploaded_file = st.file_uploader(
+        "Upload an image of a building", 
+        type=["jpg", "jpeg", "png", "dng", "heic", "heif"]
+    )
+    image_file = uploaded_file
         
     # with tab2:
     #     # Camera input
