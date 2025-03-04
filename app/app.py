@@ -39,6 +39,16 @@ def find_model_paths():
     """Find all available model paths (local or remote)."""
     models = []
 
+    models_dir = "app/models"
+    if os.path.exists(models_dir):
+        for model_file in os.listdir(models_dir):
+            if model_file.endswith(".pth"):
+                model_name = os.path.splitext(model_file)[0]
+                models.append((
+                    f"📦 {model_name} (Packaged)",
+                    model_name
+                ))
+
     models.append((
         "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)", 
         "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned/resolve/main/best_model_fine_tuned.pth"
@@ -85,8 +95,12 @@ def load_model(model_path):
         class_names = [f"Architectural Style {i+1}" for i in range(num_classes)]
         return model, device, class_names
     
+    packaged_model_path = os.path.join("app/models", f"{model_path}.pth")
+    if os.path.exists(packaged_model_path):
+        checkpoint_path = packaged_model_path
+    
     # Hugging Face
-    if model_path.startswith("huggingface:"):
+    elif model_path.startswith("huggingface:"):
         _, repo_id, filename = model_path.split(":")
         local_path = load_model_from_hf(repo_id, filename)
         if local_path:
