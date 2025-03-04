@@ -206,7 +206,7 @@ def main():
     # Confidence threshold
     confidence_threshold = st.sidebar.slider(
         "Minimum confidence threshold (%)", 
-        0, 100, 90
+        0, 100, 10
     ) / 100.0
     
     # Load model
