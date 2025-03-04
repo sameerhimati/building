@@ -2,6 +2,8 @@ from torchvision import transforms
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets
+from PIL import Image
+import numpy as np
 
 def calculate_dataset_stats(data_dir):
     """
@@ -83,3 +85,48 @@ def get_data_transforms(data_dir=None, use_custom_stats=False):
         ])
     }
     return data_transforms
+
+def get_prediction_transform(img_size=224, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
+    """
+    Returns transformation pipeline for prediction, with robust image handling
+    """
+    transform = transforms.Compose([
+        transforms.Resize((img_size, img_size)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=std)
+    ])
+    return transform
+
+def preprocess_image_for_prediction(image, transform=None):
+    """
+    Robustly preprocess any image for model prediction
+    
+    Args:
+        image: Input image (PIL Image, numpy array, or tensor)
+        transform: Optional custom transform (uses default if None)
+        
+    Returns:
+        torch.Tensor: Preprocessed image tensor ready for model input (with batch dimension)
+    """
+    # If no transform provided, use default
+    if transform is None:
+        transform = get_prediction_transform()
+    
+    # Convert to PIL Image if it's not already
+    if not isinstance(image, Image.Image):
+        if isinstance(image, torch.Tensor):
+            # If it's a tensor, convert to numpy first
+            image = Image.fromarray(image.numpy().astype(np.uint8))
+        else:
+            # Assume it's a numpy array or something convertible to numpy
+            image = Image.fromarray(np.array(image))
+    
+    # Ensure image is in RGB mode (convert from RGBA if needed)
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    
+    # Apply transformations and add batch dimension
+    transformed_image = transform(image)
+    input_tensor = transformed_image.unsqueeze(0)
+    
+    return input_tensor

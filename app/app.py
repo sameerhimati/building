@@ -12,8 +12,8 @@ from huggingface_hub import hf_hub_download
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from our existing modules
-from src.dataset import get_data_transforms
-from src.models import create_efficientnet_model, create_mobilenet_model  # Import our new MobileNet model
+from src.dataset import get_data_transforms, preprocess_image_for_prediction
+from src.models import create_efficientnet_model, create_mobilenet_model
 from utils.wiki_integration import get_wiki_summary
 from utils.style_cards import display_style_card
 from utils.feedback_collector import FeedbackCollector
@@ -84,39 +84,25 @@ def find_model_paths():
 
 # Update load_model function to handle model architecture selection
 @st.cache_resource
-def load_model(model_path, architecture='efficientnet'):
+def load_model(model_path, architecture = "EfficientNetV2"):
     """Load the trained model from local path or remote URL."""
-    device = torch.device("mps" if torch.backends.mps.is_available() else 
+    device = torch.device("mps" if torch.backends.mps.is_available() else
                          ("cuda" if torch.cuda.is_available() else "cpu"))
     
     # Demo mode - return pretrained model
     if model_path == "demo":
         st.warning("⚠️ Running in demo mode with a pretrained model. Accuracy may be limited.")
         num_classes = 45  # Your number of classes
-        if architecture == 'mobilenet':
-            model = create_mobilenet_model(num_classes, pretrained=True, freeze_backbone=False)
-        else:
-            model = create_efficientnet_model(num_classes, pretrained=True, freeze_backbone=False)
+        model = create_efficientnet_model(num_classes, pretrained=True, freeze_backbone=False)
         class_names = [f"Architectural Style {i+1}" for i in range(num_classes)]
         return model, device, class_names
     
-    packaged_model_path = os.path.join("app/models", f"{model_path}.pth")
-    if os.path.exists(packaged_model_path):
-        checkpoint_path = packaged_model_path
-    
-    # Hugging Face
-    elif model_path.startswith("huggingface:"):
-        _, repo_id, filename = model_path.split(":")
-        local_path = load_model_from_hf(repo_id, filename)
-        if local_path:
-            model_path = local_path
-        else:
-            st.error("Failed to load model from Hugging Face")
-
+    # Determine actual file path
+    if os.path.exists(os.path.join("app/models", f"{model_path}.pth")):
+        checkpoint_path = os.path.join("app/models", f"{model_path}.pth")
     # Remote URL
     elif model_path.startswith(("http://", "https://")):
-        with st.spinner("Initializing..."):
-        # Download to temp file
+        with st.spinner("Downloading model..."):
             import tempfile
             import requests
             
@@ -131,36 +117,40 @@ def load_model(model_path, architecture='efficientnet'):
         checkpoint_path = model_path
     
     # Load checkpoint
-    checkpoint = torch.load(checkpoint_path, map_location=device)
-    
-    # Extract model state dict and class names
-    if 'model_state_dict' in checkpoint:
-        model_state_dict = checkpoint['model_state_dict']
-        class_names = checkpoint.get('class_names', [f"Class_{i}" for i in range(45)])
-    else:
-        model_state_dict = checkpoint
-        class_names = [f"Class_{i}" for i in range(45)]
-    
-    # Create model with same architecture
-    num_classes = len(class_names)
-    if architecture == 'mobilenet':
-        model = create_mobilenet_model(num_classes, pretrained=False, freeze_backbone=False)
-    else:
-        model = create_efficientnet_model(num_classes, pretrained=False, freeze_backbone=False)
-    
-    # Load weights
     try:
-        model.load_state_dict(model_state_dict)
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+        
+        # Extract model state dict and class names
+        if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+            model_state_dict = checkpoint['model_state_dict']
+            class_names = checkpoint.get('class_names', [f"Class_{i}" for i in range(45)])
+        else:
+            model_state_dict = checkpoint
+            class_names = [f"Class_{i}" for i in range(45)]
+        
+        # Create EfficientNet model with correct number of classes
+        if architecture == "EfficientNetV2": 
+            num_classes = len(class_names)
+            model = create_efficientnet_model(num_classes, pretrained=False, freeze_backbone=False)
+        else:
+            st.error("Invalid architecture selected. Please select 'EfficientNetV2'.")
+            return None, device, []
+        # Load weights
+        try:
+            model.load_state_dict(model_state_dict)
+            st.sidebar.success("Model loaded successfully")
+        except Exception as e:
+            st.warning(f"Loading model with relaxed constraints due to: {str(e)}")
+            model.load_state_dict(model_state_dict, strict=False)
+        
+        model.to(device)
+        model.eval()  # Set to evaluation mode
+        
+        return model, device, class_names
+        
     except Exception as e:
-        st.error(f"Error loading model weights: {str(e)}. This may be due to architecture mismatch.")
-        # Try with strict=False
-        model.load_state_dict(model_state_dict, strict=False)
-        st.warning("Model loaded with some missing or unexpected keys. Results may be affected.")
-    
-    model.to(device)
-    model.eval()  # Set to evaluation mode
-    
-    return model, device, class_names
+        st.error(f"Error loading model: {str(e)}")
+        return None, device, []
 
 def visualize_top_classes(probabilities, class_indices, class_names, image, top_k=3):
     """Visualize top-k class probabilities."""
@@ -230,7 +220,7 @@ def main():
     # Architecture selection
     architecture = st.sidebar.radio(
         "Model Architecture",
-        ["Efficient Net (Better Model)", "MobileNet (Faster Model)"],
+        ["EfficientNetV2"],
         index=0,  # Default to EfficientNet
         help="Select the model architecture. Note: If you switch architecture with a pre-trained model, some layers may be incompatible."
     )
@@ -279,11 +269,11 @@ def main():
         )
         image_file = uploaded_file
         
-    with tab2:
-        # Camera input
-        camera_input = st.camera_input("Take a photo of a building")
-        if camera_input:
-            image_file = camera_input
+    # with tab2:
+    #     # Camera input
+    #     camera_input = st.camera_input("Take a photo of a building")
+    #     if camera_input:
+    #         image_file = camera_input
     
     # Process image if available
     if image_file is not None:
@@ -317,7 +307,15 @@ def main():
         
         # Preprocess the image
         transforms = get_data_transforms()['val']  # Use validation transforms
-        input_tensor = transforms(image).unsqueeze(0)
+        try:
+            # Use your new robust preprocessing function
+            input_tensor = preprocess_image_for_prediction(image, transforms)
+            
+            # No need to call unsqueeze(0) as your function already does this
+        except Exception as e:
+            st.error(f"Error preprocessing image: {str(e)}")
+            st.info("This might be due to an unsupported image format or corruption. Try a different image or format.")
+            st.stop()
         
         # Make prediction
         with st.spinner("Analyzing architectural style..."):
