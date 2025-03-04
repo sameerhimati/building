@@ -1,0 +1,18 @@
+{
+  "feedback": [
+    {
+      "id": "173ba743-c780-4a08-a585-e23a6f1aa994",
+      "timestamp": "2025-03-03T23:43:42.584686",
+      "image_filename": "20250303_234342_8c1ad8cb.jpg",
+      "predicted_style": "Safavid architecture",
+      "is_correct": true,
+      "correct_style": "Safavid architecture"
+    }
+  ],
+  "stats": {
+    "total": 1,
+    "correct": 1,
+    "incorrect": 0,
+    "accuracy": 0
+  }
+}

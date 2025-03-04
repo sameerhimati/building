@@ -13,7 +13,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from our existing modules
 from src.dataset import get_data_transforms
-from src.models import create_efficientnet_model  # Assuming this function exists in your models.py
+from src.models import create_efficientnet_model, create_mobilenet_model  # Import our new MobileNet model
+from utils.wiki_integration import get_wiki_summary
+from utils.style_cards import display_style_card
+from utils.feedback_collector import FeedbackCollector
 
 # Set page configuration
 st.set_page_config(
@@ -21,6 +24,9 @@ st.set_page_config(
     page_icon="🏛️",
     layout="wide"
 )
+
+# Create feedback collector
+feedback_collector = FeedbackCollector()
 
 def load_model_from_hf(repo_id, filename):
     """Load model from Hugging Face Hub."""
@@ -53,10 +59,6 @@ def find_model_paths():
         "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)", 
         "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned/resolve/main/best_model_fine_tuned.pth"
     ))
-    # models.append((
-    #     "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)",
-    #     "huggingface:sameerhimati/architectural-style-classifier-EfficientNetFineTuned:best_model_fine_tuned.pth"
-    # ))
     
     # Look in outputs directory (local development)
     output_dir = "outputs"
@@ -80,9 +82,9 @@ def find_model_paths():
     
     return models
 
-# Update load_model function to handle remote or missing models
+# Update load_model function to handle model architecture selection
 @st.cache_resource
-def load_model(model_path):
+def load_model(model_path, architecture='efficientnet'):
     """Load the trained model from local path or remote URL."""
     device = torch.device("mps" if torch.backends.mps.is_available() else 
                          ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -91,7 +93,10 @@ def load_model(model_path):
     if model_path == "demo":
         st.warning("⚠️ Running in demo mode with a pretrained model. Accuracy may be limited.")
         num_classes = 45  # Your number of classes
-        model = create_efficientnet_model(num_classes, pretrained=True, freeze_backbone=False)
+        if architecture == 'mobilenet':
+            model = create_mobilenet_model(num_classes, pretrained=True, freeze_backbone=False)
+        else:
+            model = create_efficientnet_model(num_classes, pretrained=True, freeze_backbone=False)
         class_names = [f"Architectural Style {i+1}" for i in range(num_classes)]
         return model, device, class_names
     
@@ -110,7 +115,6 @@ def load_model(model_path):
 
     # Remote URL
     elif model_path.startswith(("http://", "https://")):
-
         with st.spinner("Initializing..."):
         # Download to temp file
             import tempfile
@@ -139,10 +143,20 @@ def load_model(model_path):
     
     # Create model with same architecture
     num_classes = len(class_names)
-    model = create_efficientnet_model(num_classes, pretrained=False, freeze_backbone=False)
+    if architecture == 'mobilenet':
+        model = create_mobilenet_model(num_classes, pretrained=False, freeze_backbone=False)
+    else:
+        model = create_efficientnet_model(num_classes, pretrained=False, freeze_backbone=False)
     
     # Load weights
-    model.load_state_dict(model_state_dict)
+    try:
+        model.load_state_dict(model_state_dict)
+    except Exception as e:
+        st.error(f"Error loading model weights: {str(e)}. This may be due to architecture mismatch.")
+        # Try with strict=False
+        model.load_state_dict(model_state_dict, strict=False)
+        st.warning("Model loaded with some missing or unexpected keys. Results may be affected.")
+    
     model.to(device)
     model.eval()  # Set to evaluation mode
     
@@ -213,9 +227,18 @@ def main():
     
     model_path = model_options[selected_model_name]
     
+    # Architecture selection
+    architecture = st.sidebar.radio(
+        "Model Architecture",
+        ["Efficient Net (Better Model)", "MobileNet (Faster Model)"],
+        index=0,  # Default to EfficientNet
+        help="Select the model architecture. Note: If you switch architecture with a pre-trained model, some layers may be incompatible."
+    )
+    
     # Display model details
     with st.sidebar.expander("Technical Details", expanded=False):
         st.write(f"**Model Path:** {model_path}")
+        st.write(f"**Architecture:** {architecture}")
         
     # Number of predictions to show
     top_k = st.sidebar.slider("Number of predictions to show", 1, 5, 3)
@@ -229,11 +252,21 @@ def main():
     # Load model
     with st.spinner("Loading model..."):
         try:
-            model, device, class_names = load_model(model_path)
+            model, device, class_names = load_model(model_path, architecture)
             st.sidebar.success(f"Model loaded successfully with {len(class_names)} architectural styles")
         except Exception as e:
             st.sidebar.error(f"Error loading model: {str(e)}")
             st.stop()
+    
+    # Add feedback stats to sidebar
+    with st.sidebar.expander("User Feedback Statistics", expanded=False):
+        feedback_stats = feedback_collector.get_stats()
+        if feedback_stats["total"] > 0:
+            st.markdown(f"**Total feedback entries:** {feedback_stats['total']}")
+            st.markdown(f"**Correct predictions:** {feedback_stats['correct']} ({feedback_stats.get('accuracy', 0):.1f}%)")
+            st.markdown(f"**Incorrect predictions:** {feedback_stats['incorrect']}")
+        else:
+            st.info("No feedback collected yet. Use the feedback options after predictions to help improve the model.")
     
     # Display tabs for different input methods
     tab1, tab2 = st.tabs(["Upload Image", "Take Photo"])
@@ -304,28 +337,35 @@ def main():
         top_idx_np = top_idx.cpu().numpy()
         
         # Create visualization
-        fig = visualize_top_classes(
-            top_probs_np, top_idx_np, class_names, image, top_k
-        )
-        st.pyplot(fig)
-        
-        # Show result details in expander
-        with st.expander("See detailed analysis"):
-            st.write("### Top Architectural Styles")
+        # fig = visualize_top_classes(
+        #     top_probs_np, top_idx_np, class_names, image, top_k
+        # )
+        # st.pyplot(fig)
+        st.write("### Top Architectural Styles")
             
             # Create a table of results
-            for i in range(top_k):
-                class_idx = top_idx_np[i]
-                class_name = class_names[class_idx]
-                probability = top_probs_np[i] * 100
-                probability = float(probability)
-                
-                st.write(f"**{i+1}. {class_name}**")
-                st.progress(probability / 100)
-                st.write(f"Confidence: {probability:.2f}%")
-                
-                if probability < confidence_threshold * 100:
-                    st.warning(f"Low confidence prediction (below {confidence_threshold*100}%)")
+        for i in range(top_k):
+            class_idx = top_idx_np[i]
+            class_name = class_names[class_idx]
+            probability = top_probs_np[i] * 100
+            probability = float(probability)
+            
+            st.write(f"**{i+1}. {class_name}**")
+            st.progress(probability / 100)
+            st.write(f"Confidence: {probability:.2f}%")
+            
+            if probability < confidence_threshold * 100:
+                st.warning(f"Low confidence prediction (below {confidence_threshold*100}%)")
+        
+        # Show top prediction information card
+        top_class_idx = top_idx_np[0]
+        top_class_name = class_names[top_class_idx]
+        top_probability = float(top_probs_np[0] * 100)
+        
+        # Style information card
+        with st.expander("Architectural Style Information", expanded=True):
+            display_style_card(top_class_name, top_probability)
+        
         
         # Low confidence warning
         if top_probs_np[0] < confidence_threshold:
@@ -335,6 +375,48 @@ def main():
             The architectural style might be ambiguous or not well-represented in our training data.
             Consider trying a different angle or a clearer image of the building.
             """)
+        
+        # Feedback collection section
+        st.markdown("---")
+        st.subheader("Help us improve! Was the prediction correct?")
+        
+        col1, col2, col3 = st.columns([1, 1, 2])
+        
+        with col1:
+            if st.button("✅ Yes, correct!", key="correct_btn"):
+                feedback_collector.collect_feedback(
+                    image=image,
+                    predicted_style=top_class_name,
+                    is_correct=True
+                )
+                st.success("Thank you for your feedback! This helps us improve the model.")
+        
+        with col2:
+            if st.button("❌ No, incorrect", key="incorrect_btn"):
+                st.session_state.show_correction = True
+        
+        # Show correction form if user said prediction was incorrect
+        if st.session_state.get("show_correction", False):
+            with col3:
+                # Dropdown with all styles
+                correct_style = st.selectbox(
+                    "What's the correct architectural style?",
+                    class_names
+                )
+                
+                if st.button("Submit correction"):
+                    feedback_collector.collect_feedback(
+                        image=image,
+                        predicted_style=top_class_name,
+                        correct_style=correct_style,
+                        is_correct=False
+                    )
+                    st.success("Thank you for your correction! This will help improve future predictions.")
+                    st.session_state.show_correction = False
 
 if __name__ == "__main__":
+    # Initialize session state
+    if "show_correction" not in st.session_state:
+        st.session_state.show_correction = False
+        
     main()

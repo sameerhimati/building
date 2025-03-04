@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Import our modules
 from src.dataset import get_data_transforms, create_datasets, create_dataloaders
-from src.models import create_efficientnet_model
+from src.models import create_efficientnet_model, create_mobilenet_model
 from src.training import setup_training, train_model, plot_training_history, fine_tune_model, plot_fine_tuning_history, plot_parameter_unfreezing
 from src.evaluation import evaluate_model, plot_confusion_matrix, print_classification_report, identify_difficult_classes
 from src.utils.visualization import visualize_model_structure
@@ -25,13 +25,13 @@ def parse_args():
     parser.add_argument("--learning_rate", type=float, default=0.001, 
                         help="Initial learning rate")
     
-    parser.add_argument("--custom_stats", action="store_true", 
+    parser.add_argument("--custom_stats", action="store_true", default=False,
                         help="Calculate custom normalization statistics")
     
     parser.add_argument("--output_dir", type=str, default="outputs", 
                         help="Directory to save outputs")
     
-    parser.add_argument("--visualize_model", action="store_true",
+    parser.add_argument("--visualize_model", action="store_true", default=False,
                         help="Visualize model architecture and parameters")
     
     parser.add_argument("--skip_training", action="store_true",
@@ -46,6 +46,10 @@ def parse_args():
     parser.add_argument("--backbone_lr_multiplier", type=float, default=0.1,
                         help="Multiplier for backbone learning rate during fine-tuning")
     
+    parser.add_argument("--architecture", type=str, default="efficientnet",
+                        choices=["efficientnet", "mobilenet"],
+                        help="Model architecture to use")
+    
     return parser.parse_args()
 
 def main():
@@ -54,7 +58,7 @@ def main():
     
     # Create output directory with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = os.path.join(args.output_dir, f"run_{timestamp}")
+    output_dir = os.path.join(args.output_dir, f"run_{timestamp}_{args.architecture}")
     os.makedirs(output_dir, exist_ok=True)
     
     # Log training parameters
@@ -89,15 +93,29 @@ def main():
         print(f"Loading model from {args.load_model}")
         checkpoint = torch.load(args.load_model, map_location=device)
         
-        # Initialize model architecture
-        model = create_efficientnet_model(num_classes, pretrained=True, 
-                                         freeze_backbone=not args.fine_tune)
+        # Initialize model architecture based on argument
+        if args.architecture == "mobilenet":
+            model = create_mobilenet_model(num_classes, pretrained=True, 
+                                          freeze_backbone=not args.fine_tune)
+        else:
+            model = create_efficientnet_model(num_classes, pretrained=True, 
+                                             freeze_backbone=not args.fine_tune)
         
         # Load weights
         if 'model_state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['model_state_dict'])
+            try:
+                model.load_state_dict(checkpoint['model_state_dict'])
+            except Exception as e:
+                print(f"Error loading model weights: {e}")
+                print("Attempting to load with strict=False (this may be normal when switching architectures)")
+                model.load_state_dict(checkpoint['model_state_dict'], strict=False)
         else:
-            model.load_state_dict(checkpoint)
+            try:
+                model.load_state_dict(checkpoint)
+            except Exception as e:
+                print(f"Error loading model weights: {e}")
+                print("Attempting to load with strict=False (this may be normal when switching architectures)")
+                model.load_state_dict(checkpoint, strict=False)
             
         # Load class names if available
         if 'class_names' in checkpoint:
@@ -110,9 +128,13 @@ def main():
                       f"doesn't match current dataset ({num_classes} classes). "
                       f"Using dataset class names.")
     else:
-        # Initialize new model
-        model = create_efficientnet_model(num_classes, pretrained=True, 
-                                         freeze_backbone=not args.fine_tune)
+        # Initialize new model based on selected architecture
+        if args.architecture == "mobilenet":
+            model = create_mobilenet_model(num_classes, pretrained=True, 
+                                          freeze_backbone=not args.fine_tune)
+        else:
+            model = create_efficientnet_model(num_classes, pretrained=True, 
+                                             freeze_backbone=not args.fine_tune)
     
     model = model.to(device)
     
@@ -132,15 +154,30 @@ def main():
         
         if args.fine_tune and args.load_model:
             print("\nStarting fine-tuning with gradual unfreezing...")
-            # Define unfreeze schedule
+            
+            # Define unfreeze schedule based on architecture
             num_epochs = args.num_epochs
-            unfreeze_schedule = {
-                0: [],  # Start with all backbone frozen
-                int(num_epochs * 0.2): [6],  # Unfreeze last block at 20% of training
-                int(num_epochs * 0.4): [5, 6],  # Unfreeze blocks 5-6 at 40% of training
-                int(num_epochs * 0.6): [4, 5, 6],  # Unfreeze blocks 4-6 at 60% of training
-                int(num_epochs * 0.8): [3, 4, 5, 6]  # Unfreeze blocks 3-6 at 80% of training
-            }
+            
+            if args.architecture == "mobilenet":
+                # For MobileNetV3, the features module has multiple layers
+                # We'll unfreeze from the end (closest to classifier) to the beginning
+                # MobileNetV3 has 16 layers in the features module
+                unfreeze_schedule = {
+                    0: [],  # Start with all backbone frozen
+                    int(num_epochs * 0.2): list(range(12, 16)),  # Unfreeze last few layers at 20% of training
+                    int(num_epochs * 0.4): list(range(8, 16)),   # Unfreeze more layers at 40% of training
+                    int(num_epochs * 0.6): list(range(4, 16)),   # Unfreeze more layers at 60% of training
+                    int(num_epochs * 0.8): list(range(0, 16))    # Unfreeze all layers at 80% of training
+                }
+            else:
+                # EfficientNetV2 schedule (as before)
+                unfreeze_schedule = {
+                    0: [],  # Start with all backbone frozen
+                    int(num_epochs * 0.2): [6],  # Unfreeze last block at 20% of training
+                    int(num_epochs * 0.4): [5, 6],  # Unfreeze blocks 5-6 at 40% of training
+                    int(num_epochs * 0.6): [4, 5, 6],  # Unfreeze blocks 4-6 at 60% of training
+                    int(num_epochs * 0.8): [3, 4, 5, 6]  # Unfreeze blocks 3-6 at 80% of training
+                }
             
             # Fine-tune the model
             model, history = fine_tune_model(
@@ -154,7 +191,8 @@ def main():
                 backbone_lr_multiplier=args.backbone_lr_multiplier,
                 patience=3,
                 factor=0.5,
-                min_lr=1e-6
+                min_lr=1e-6,
+                architecture=args.architecture  # Pass architecture to fine_tuning
             )
             
             # Save fine-tuned model
@@ -162,7 +200,8 @@ def main():
             torch.save({
                 'model_state_dict': model.state_dict(),
                 'class_names': class_names,
-                'history': history
+                'history': history,
+                'architecture': args.architecture  # Save architecture info
             }, model_path)
             print(f"Fine-tuned model saved to {model_path}")
             
@@ -177,7 +216,7 @@ def main():
         else:
             # Regular training
             print("\nStarting model training...")
-            optimizer, scheduler = setup_training(
+            criterion, optimizer, scheduler = setup_training(
                 model, device, learning_rate=args.learning_rate
             )
             
@@ -192,7 +231,8 @@ def main():
             torch.save({
                 'model_state_dict': model.state_dict(),
                 'class_names': class_names,
-                'history': history
+                'history': history,
+                'architecture': args.architecture  # Save architecture info
             }, model_path)
             print(f"Model saved to {model_path}")
             

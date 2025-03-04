@@ -1,0 +1,722 @@
+{
+    "Achaemenid architecture": {
+      "period": "550-330 BCE",
+      "region": "Ancient Persia (modern-day Iran)",
+      "key_features": [
+        "Massive stone columns",
+        "Bull and lion sculptures",
+        "Symmetrical designs",
+        "Grand staircases",
+        "Hypostyle halls"
+      ],
+      "famous_examples": [
+        "Persepolis (Iran)",
+        "Tomb of Cyrus the Great (Iran)",
+        "Palace of Darius at Susa (Iran)"
+      ]
+    },
+    "Amazigh architecture": {
+      "period": "Ancient to present",
+      "region": "North Africa (Morocco, Algeria, Tunisia, Libya)",
+      "key_features": [
+        "Earth and stone construction",
+        "Flat roofs with parapets",
+        "Geometric decorative patterns",
+        "Small windows for climate control",
+        "Interior courtyards"
+      ],
+      "famous_examples": [
+        "Ait Benhaddou (Morocco)",
+        "Ghadames Old Town (Libya)",
+        "Villages of Kabyle region (Algeria)"
+      ]
+    },
+    "American craftsman style": {
+      "period": "1890s to 1930s",
+      "region": "United States",
+      "key_features": [
+        "Low-pitched roofs with wide eaves",
+        "Exposed rafters and decorative beams",
+        "Front porches with square columns",
+        "Handcrafted stone or woodwork",
+        "Built-in furniture and light fixtures"
+      ],
+      "famous_examples": [
+        "Gamble House (Pasadena, California)",
+        "Thorsen House (Berkeley, California)",
+        "Robert R. Blacker House (Pasadena, California)"
+      ]
+    },
+    "American Foursquare architecture": {
+      "period": "1890s to 1930s",
+      "region": "United States and Canada",
+      "key_features": [
+        "Cubic, box-like shape",
+        "Four rooms on each floor",
+        "Low-hipped roof with deep overhang",
+        "Large central dormer",
+        "Full-width porch with wide stairs"
+      ],
+      "famous_examples": [
+        "Warren G. Harding House (Marion, Ohio)",
+        "Reagan House (Dixon, Illinois)",
+        "Various residential examples throughout Midwest and Northeast US"
+      ]
+    },
+    "Ancient Egyptian architecture": {
+      "period": "3000 BCE to 30 BCE",
+      "region": "Egypt",
+      "key_features": [
+        "Massive stone structures",
+        "Post and lintel construction",
+        "Hieroglyphic carvings",
+        "Columns resembling papyrus, lotus, and palm",
+        "Monumental scale"
+      ],
+      "famous_examples": [
+        "Great Pyramids of Giza",
+        "Temple of Karnak (Luxor)",
+        "Temple of Abu Simbel"
+      ]
+    },
+    "Architecture of Edo Period": {
+      "period": "1603-1868",
+      "region": "Japan",
+      "key_features": [
+        "Wooden construction",
+        "Shoji screens and tatami floors",
+        "Curved, tiled roofs",
+        "Careful integration with landscape",
+        "Castle architecture with stone foundations"
+      ],
+      "famous_examples": [
+        "Himeji Castle",
+        "Katsura Imperial Villa (Kyoto)",
+        "Nijo Castle (Kyoto)"
+      ]
+    },
+    "Architecture of the Joseon Dynasty": {
+      "period": "1392-1910",
+      "region": "Korea",
+      "key_features": [
+        "Confucian principles of balance and harmony",
+        "Wooden structures on stone platforms",
+        "Dancheong (colorful painted decoration)",
+        "Curved tiled roofs with extended eaves",
+        "Ondol floor heating system"
+      ],
+      "famous_examples": [
+        "Gyeongbokgung Palace (Seoul)",
+        "Changdeokgung Palace (Seoul)",
+        "Jongmyo Shrine (Seoul)"
+      ]
+    },
+    "Architecture of the Qing Dynasty": {
+      "period": "1644-1912",
+      "region": "China",
+      "key_features": [
+        "Timber framework construction",
+        "Yellow glazed roof tiles for imperial buildings",
+        "Strict hierarchical layout",
+        "Dougong bracket systems",
+        "Raised platforms and marble terraces"
+      ],
+      "famous_examples": [
+        "Forbidden City (Beijing)",
+        "Summer Palace (Beijing)",
+        "Temple of Heaven (Beijing)"
+      ]
+    },
+    "Art Deco architecture": {
+      "period": "1920s to 1930s",
+      "region": "Global (originated in Paris)",
+      "key_features": [
+        "Geometric patterns",
+        "Bold, vibrant colors",
+        "Symmetrical arrangements",
+        "Stylized representations of natural forms",
+        "Machine age imagery and materials"
+      ],
+      "famous_examples": [
+        "Chrysler Building (New York)",
+        "Empire State Building (New York)",
+        "Eastern Columbia Building (Los Angeles)"
+      ]
+    },
+    "Art Nouveau architecture": {
+      "period": "1890 to 1910",
+      "region": "Europe and North America",
+      "key_features": [
+        "Organic, flowing curvilinear forms",
+        "Asymmetrical designs",
+        "Floral and plant-inspired motifs",
+        "Use of iron and glass in new ways",
+        "Integration of structure and ornament"
+      ],
+      "famous_examples": [
+        "Casa Batlló by Gaudí (Barcelona)",
+        "Hôtel Tassel by Victor Horta (Brussels)",
+        "Métro entrances by Hector Guimard (Paris)"
+      ]
+    },
+    "Balinese architecture": {
+      "period": "Ancient to present",
+      "region": "Bali, Indonesia",
+      "key_features": [
+        "Open pavilions (bale)",
+        "Thatched roofs with steep slopes",
+        "Intricate stone and wood carvings",
+        "Split gates (candi bentar)",
+        "Courtyard layout with family temples"
+      ],
+      "famous_examples": [
+        "Pura Besakih (Mother Temple)",
+        "Ubud Royal Palace",
+        "Taman Ayun Temple"
+      ]
+    },
+    "Baroque architecture": {
+      "period": "Late 16th to 18th century",
+      "region": "Europe (originated in Italy)",
+      "key_features": [
+        "Dramatic use of light and shadow",
+        "Curved, dynamic forms",
+        "Rich decoration and ornamentation",
+        "Grandeur and theatrical effects",
+        "Illusionistic elements"
+      ],
+      "famous_examples": [
+        "St. Peter's Basilica (Vatican City)",
+        "Palace of Versailles (France)",
+        "Karlskirche (Vienna)"
+      ]
+    },
+    "Bauhaus architecture": {
+      "period": "1919 to 1933",
+      "region": "Germany, then global influence",
+      "key_features": [
+        "Minimalist, functional design",
+        "Rejection of ornamentation",
+        "Flat roofs",
+        "Glass curtain walls",
+        "Geometric forms and asymmetric balance"
+      ],
+      "famous_examples": [
+        "Bauhaus Building (Dessau, Germany)",
+        "Villa Tugendhat (Brno, Czech Republic)",
+        "Tel Aviv White City (Israel)"
+      ]
+    },
+    "Beaux-Arts architecture": {
+      "period": "1880s to 1920s",
+      "region": "France, United States, and global",
+      "key_features": [
+        "Symmetrical facades",
+        "Elaborate decoration with classical motifs",
+        "Raised first story",
+        "Grand entrances and staircases",
+        "Combination of classical elements from different periods"
+      ],
+      "famous_examples": [
+        "Grand Palais (Paris)",
+        "New York Public Library",
+        "Union Station (Washington DC)"
+      ]
+    },
+    "Brutalist architecture": {
+      "period": "1950s to 1970s",
+      "region": "Global",
+      "key_features": [
+        "Exposed concrete (béton brut)",
+        "Massive, monolithic forms",
+        "Repetitive angular geometries",
+        "Rough, unfinished surfaces",
+        "Expression of structure and materials"
+      ],
+      "famous_examples": [
+        "Barbican Centre (London)",
+        "Habitat 67 (Montreal)",
+        "Boston City Hall (USA)"
+      ]
+    },
+    "Buddhist architecture": {
+      "period": "3rd century BCE to present",
+      "region": "Asia (India, China, Japan, Southeast Asia)",
+      "key_features": [
+        "Stupas (dome-shaped structures)",
+        "Pagodas with multiple tiers",
+        "Mandala-based layouts",
+        "Detailed relief carvings",
+        "Monastic complexes (viharas)"
+      ],
+      "famous_examples": [
+        "Borobudur (Indonesia)",
+        "Todai-ji Temple (Japan)",
+        "Shwedagon Pagoda (Myanmar)"
+      ]
+    },
+    "Byzantine architecture": {
+      "period": "4th to 15th century",
+      "region": "Byzantine Empire (Eastern Mediterranean)",
+      "key_features": [
+        "Domed basilicas",
+        "Rich mosaics and marble decorations",
+        "Greek cross plan",
+        "Pendentives supporting domes",
+        "Round arches and brick construction"
+      ],
+      "famous_examples": [
+        "Hagia Sophia (Istanbul)",
+        "San Vitale (Ravenna, Italy)",
+        "St. Mark's Basilica (Venice)"
+      ]
+    },
+    "Chicago school architecture": {
+      "period": "1880s to 1900s",
+      "region": "Chicago, United States, then widespread",
+      "key_features": [
+        "Steel-frame construction",
+        "Limited exterior ornamentation",
+        "Large windows (often in a grid pattern)",
+        "Rational expression of structure",
+        "Non-load-bearing curtain walls"
+      ],
+      "famous_examples": [
+        "Home Insurance Building (Chicago)",
+        "Wainwright Building (St. Louis)",
+        "Reliance Building (Chicago)"
+      ]
+    },
+    "Colonial architecture": {
+      "period": "17th to early 19th century",
+      "region": "European colonies worldwide",
+      "key_features": [
+        "Symmetrical façades",
+        "Central entrance with decorative crown",
+        "Classical columns or pilasters",
+        "Local adaptations of European styles",
+        "Multi-pane windows"
+      ],
+      "famous_examples": [
+        "Independence Hall (Philadelphia)",
+        "San Francisco de Quito Cathedral (Ecuador)",
+        "Governor's Palace (Williamsburg, Virginia)"
+      ]
+    },
+    "Deconstructivism": {
+      "period": "1980s to present",
+      "region": "Global",
+      "key_features": [
+        "Fragmentation and distortion of forms",
+        "Non-rectilinear shapes",
+        "Unpredictable, controlled chaos",
+        "Manipulation of surface and structure",
+        "Apparent instability and disorder"
+      ],
+      "famous_examples": [
+        "Guggenheim Museum Bilbao (Spain) by Frank Gehry",
+        "Walt Disney Concert Hall (Los Angeles) by Frank Gehry",
+        "CCTV Headquarters (Beijing) by Rem Koolhaas"
+      ]
+    },
+    "Dravidian architecture": {
+      "period": "7th to 18th century",
+      "region": "Southern India",
+      "key_features": [
+        "Pyramid-shaped temples (vimanas)",
+        "Elaborate gateway towers (gopurams)",
+        "Stone construction with minimal mortar",
+        "Multi-pillared halls (mandapas)",
+        "Intricate sculpture work"
+      ],
+      "famous_examples": [
+        "Brihadisvara Temple (Thanjavur)",
+        "Meenakshi Temple (Madurai)",
+        "Shore Temple (Mahabalipuram)"
+      ]
+    },
+    "Edwardian architecture": {
+      "period": "1901 to 1910",
+      "region": "United Kingdom and British Empire",
+      "key_features": [
+        "Less ornate than Victorian style",
+        "Lighter colors and cleaner lines",
+        "Arts and Crafts influences",
+        "Bay windows and balconies",
+        "Combination of historical revival styles"
+      ],
+      "famous_examples": [
+        "Admiralty Arch (London)",
+        "Royal Liver Building (Liverpool)",
+        "Ritz Hotel (London)"
+      ]
+    },
+    "Georgian architecture": {
+      "period": "1714 to 1830s",
+      "region": "Britain, Ireland, and colonies",
+      "key_features": [
+        "Symmetrical composition",
+        "Classical proportions",
+        "Palladian influence",
+        "Decorative Corinthian or Ionic columns",
+        "Sash windows with multiple panes"
+      ],
+      "famous_examples": [
+        "Royal Crescent (Bath, England)",
+        "White House (Washington DC)",
+        "Custom House (Dublin, Ireland)"
+      ]
+    },
+    "Gothic architecture": {
+      "period": "12th to 16th century",
+      "region": "Europe (originated in France)",
+      "key_features": [
+        "Pointed arches",
+        "Ribbed vaults",
+        "Flying buttresses",
+        "Large stained glass windows",
+        "Tall, vertical emphasis"
+      ],
+      "famous_examples": [
+        "Notre-Dame Cathedral (Paris)",
+        "Westminster Abbey (London)",
+        "Cologne Cathedral (Germany)"
+      ]
+    },
+    "Greek Revival architecture": {
+      "period": "1825 to 1860",
+      "region": "Northern Europe and United States",
+      "key_features": [
+        "Columns in Doric, Ionic, or Corinthian orders",
+        "Pediments and entablatures",
+        "Symmetrical shape",
+        "White painted exteriors",
+        "Classical proportions"
+      ],
+      "famous_examples": [
+        "British Museum (London)",
+        "Brandenburg Gate (Berlin)",
+        "Lincoln Memorial (Washington DC)"
+      ]
+    },
+    "Hausa architecture": {
+      "period": "14th century to present",
+      "region": "West Africa (Nigeria, Niger, Ghana)",
+      "key_features": [
+        "Thick earth walls for insulation",
+        "Flat roofs with parapets",
+        "Decorative reliefs on facades",
+        "Geometric surface patterns",
+        "Arched entrances and niches"
+      ],
+      "famous_examples": [
+        "Friday Mosque of Zaria (Nigeria)",
+        "Kano city walls (Nigeria)",
+        "Agadez Grand Mosque (Niger)"
+      ]
+    },
+    "International style": {
+      "period": "1920s to 1960s",
+      "region": "Global",
+      "key_features": [
+        "Rectilinear forms",
+        "Light, taut plane surfaces",
+        "Open interior spaces",
+        "Absence of ornamentation",
+        "Cantilever construction"
+      ],
+      "famous_examples": [
+        "Seagram Building (New York) by Mies van der Rohe",
+        "Villa Savoye (France) by Le Corbusier",
+        "Lever House (New York) by SOM"
+      ]
+    },
+    "Jain architecture": {
+      "period": "2nd century BCE to present",
+      "region": "India",
+      "key_features": [
+        "Richly decorated temples (derasars)",
+        "White marble construction",
+        "Intricate carvings of Tirthankaras",
+        "Multi-spired designs",
+        "Shikhara towers over sanctum"
+      ],
+      "famous_examples": [
+        "Dilwara Temples (Mount Abu, Rajasthan)",
+        "Ranakpur Temple (Rajasthan)",
+        "Palitana Temple Complex (Gujarat)"
+      ]
+    },
+    "Khmer architecture": {
+      "period": "9th to 15th century",
+      "region": "Cambodia and parts of Thailand, Laos, Vietnam",
+      "key_features": [
+        "Temple mountains representing Mount Meru",
+        "Galleries with bas-reliefs",
+        "Sandstone and laterite construction",
+        "Towers with lotus-bud tops (prasat)",
+        "Moats and rectangular enclosures"
+      ],
+      "famous_examples": [
+        "Angkor Wat",
+        "Bayon Temple",
+        "Banteay Srei"
+      ]
+    },
+    "Maya architecture": {
+      "period": "2000 BCE to 16th century CE",
+      "region": "Mesoamerica (Mexico, Guatemala, Belize)",
+      "key_features": [
+        "Stepped pyramids with temples on top",
+        "Corbel arch construction",
+        "Roof combs (decorative superstructure)",
+        "Stucco facades with painted surfaces",
+        "Astronomical alignments"
+      ],
+      "famous_examples": [
+        "Tikal (Guatemala)",
+        "Chichen Itza (Mexico)",
+        "Palenque (Mexico)"
+      ]
+    },
+    "Minangkabau architecture": {
+      "period": "14th century to present",
+      "region": "West Sumatra, Indonesia",
+      "key_features": [
+        "Buffalo horn-shaped curved roofs (Rumah Gadang)",
+        "Multi-tiered, upswept gables",
+        "Wooden construction with intricate carvings",
+        "Raised floor on stilts",
+        "Decorative elements with symbolic meanings"
+      ],
+      "famous_examples": [
+        "Pagaruyung Palace",
+        "Istano Basa Pagaruyung",
+        "Traditional houses in Bukittinggi"
+      ]
+    },
+    "Moorish architecture": {
+      "period": "8th to 15th century",
+      "region": "North Africa and Iberian Peninsula",
+      "key_features": [
+        "Horseshoe arches",
+        "Elaborate geometric patterns",
+        "Arabesques and calligraphy",
+        "Muqarnas (honeycomb vaulting)",
+        "Colorful ceramic tiles (azulejos)"
+      ],
+      "famous_examples": [
+        "Alhambra (Granada, Spain)",
+        "Great Mosque of Córdoba (Spain)",
+        "Koutoubia Mosque (Marrakech, Morocco)"
+      ]
+    },
+    "Mughal architecture": {
+      "period": "16th to 19th century",
+      "region": "Indian subcontinent",
+      "key_features": [
+        "Symmetrical layouts often with gardens",
+        "White marble and red sandstone",
+        "Bulbous domes",
+        "Chhatris (elevated, dome-shaped pavilions)",
+        "Pietra dura inlay work"
+      ],
+      "famous_examples": [
+        "Taj Mahal (Agra)",
+        "Humayun's Tomb (Delhi)",
+        "Red Fort (Delhi)"
+      ]
+    },
+    "Novelty architecture": {
+      "period": "1920s to present",
+      "region": "Primarily United States",
+      "key_features": [
+        "Structures mimicking objects or animals",
+        "Buildings as advertisements or attractions",
+        "Whimsical, playful designs",
+        "Often associated with roadside attractions",
+        "Form takes precedence over function"
+      ],
+      "famous_examples": [
+        "Randy's Donuts (Los Angeles)",
+        "Lucy the Elephant (New Jersey)",
+        "Longaberger Basket Building (Ohio)"
+      ]
+    },
+    "Ottoman architecture": {
+      "period": "14th to early 20th century",
+      "region": "Ottoman Empire (Turkey, Balkans, Middle East, North Africa)",
+      "key_features": [
+        "Large central domes with semi-domes",
+        "Slender minarets",
+        "Courtyard layouts",
+        "Iznik tile decoration",
+        "Pendentives supporting domes"
+      ],
+      "famous_examples": [
+        "Süleymaniye Mosque (Istanbul)",
+        "Topkapı Palace (Istanbul)",
+        "Blue Mosque (Istanbul)"
+      ]
+    },
+    "Palladian architecture": {
+      "period": "16th to 18th century",
+      "region": "Italy, England, and North America",
+      "key_features": [
+        "Symmetrical façades",
+        "Classical columns and pediments",
+        "Mathematical proportions",
+        "Central hall with side wings",
+        "Temple-front portico"
+      ],
+      "famous_examples": [
+        "Villa Rotonda (Vicenza, Italy)",
+        "Chiswick House (London)",
+        "Monticello (Virginia, USA)"
+      ]
+    },
+    "Postmodern architecture": {
+      "period": "1970s to 1990s",
+      "region": "Global",
+      "key_features": [
+        "Playful use of historical elements",
+        "Bright colors and varied materials",
+        "Deliberate contradictions and complexity",
+        "Irony and wit in design",
+        "Rejection of modernist minimalism"
+      ],
+      "famous_examples": [
+        "AT&T Building (now 550 Madison Avenue) by Philip Johnson",
+        "Piazza d'Italia (New Orleans) by Charles Moore",
+        "Portland Building (Oregon) by Michael Graves"
+      ]
+    },
+    "Pueblo architecture": {
+      "period": "900 CE to present",
+      "region": "Southwestern United States",
+      "key_features": [
+        "Adobe (mud brick) construction",
+        "Flat roofs with vigas (wooden beams)",
+        "Terraced, multi-story structures",
+        "Rounded edges and organic forms",
+        "Integrated with natural landscape"
+      ],
+      "famous_examples": [
+        "Taos Pueblo (New Mexico)",
+        "Acoma Pueblo (New Mexico)",
+        "Mesa Verde cliff dwellings (Colorado)"
+      ]
+    },
+    "Queen Anne architecture": {
+      "period": "1880s to 1900s",
+      "region": "United States, United Kingdom, Australia",
+      "key_features": [
+        "Asymmetrical facades",
+        "Wrap-around porches",
+        "Ornate decorative details",
+        "Towers or turrets",
+        "Mixed surface textures and materials"
+      ],
+      "famous_examples": [
+        "Carson Mansion (Eureka, California)",
+        "Painted Ladies of San Francisco",
+        "The Gingerbread House (Savannah, Georgia)"
+      ]
+    },
+    "Romanesque architecture": {
+      "period": "9th to 12th century",
+      "region": "Europe",
+      "key_features": [
+        "Round arches",
+        "Massive stone walls",
+        "Small windows",
+        "Barrel vaults",
+        "Decorative arcading"
+      ],
+      "famous_examples": [
+        "Durham Cathedral (England)",
+        "Speyer Cathedral (Germany)",
+        "Leaning Tower of Pisa (Italy)"
+      ]
+    },
+    "Russian Revival architecture": {
+      "period": "19th to early 20th century",
+      "region": "Russia and Eastern Europe",
+      "key_features": [
+        "Colorful tented roofs",
+        "Onion domes",
+        "Ornate decoration influenced by Byzantine style",
+        "Kokoshniki (decorative semi-circular arches)",
+        "Revival of medieval Russian motifs"
+      ],
+      "famous_examples": [
+        "Saint Basil's Cathedral (Moscow)",
+        "Church of the Savior on Spilled Blood (St. Petersburg)",
+        "State Historical Museum (Moscow)"
+      ]
+    },
+    "Safavid architecture": {
+      "period": "16th to 18th century",
+      "region": "Persia (Iran)",
+      "key_features": [
+        "Elaborate tile work with vivid colors",
+        "Iwans (vaulted spaces open on one side)",
+        "Double-shell domes",
+        "Grand public squares",
+        "Paradise gardens with quadripartite layout"
+      ],
+      "famous_examples": [
+        "Imam Square (Isfahan)",
+        "Sheikh Lotfollah Mosque (Isfahan)",
+        "Chehel Sotoun Palace (Isfahan)"
+      ]
+    },
+    "Stalinist architecture": {
+      "period": "1930s to 1950s",
+      "region": "Soviet Union and Eastern Bloc",
+      "key_features": [
+        "Monumental, imposing scale",
+        "Neoclassical elements combined with socialist symbolism",
+        "Lavish decorative details",
+        "Symmetrical composition",
+        "Stepped silhouettes with central towers"
+      ],
+      "famous_examples": [
+        "Seven Sisters skyscrapers (Moscow)",
+        "Moscow Metro stations",
+        "Palace of Culture and Science (Warsaw)"
+      ]
+    },
+    "Swahili architecture": {
+      "period": "13th century to present",
+      "region": "East African coast (Kenya, Tanzania, Mozambique)",
+      "key_features": [
+        "Coral stone construction",
+        "Carved wooden doors",
+        "Enclosed courtyards",
+        "Intricate plasterwork",
+        "Mashrabiya (wooden lattice screens)"
+      ],
+      "famous_examples": [
+        "Lamu Old Town (Kenya)",
+        "Stone Town (Zanzibar, Tanzania)",
+        "Fort Jesus (Mombasa, Kenya)"
+      ]
+    },
+    "Tudor Revival architecture": {
+      "period": "Late 19th to mid-20th century",
+      "region": "United Kingdom, United States, Canada",
+      "key_features": [
+        "Half-timbering with stucco or brick infill",
+        "Steeply pitched roofs",
+        "Tall, narrow windows with small panes",
+        "Elaborate chimneys with decorative tops",
+        "Asymmetrical designs"
+      ],
+      "famous_examples": [
+        "Liberty Hall (Frankfort, Kentucky)",
+        "Ascott House (Buckinghamshire, England)",
+        "Stan Hywet Hall (Akron, Ohio)"
+      ]
+    }
+  }

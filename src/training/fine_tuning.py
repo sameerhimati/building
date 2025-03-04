@@ -25,13 +25,14 @@ def freeze_model_backbone(model, freeze=True):
         
     return model
 
-def unfreeze_layers_by_index(model, indices_to_unfreeze):
+def unfreeze_layers_by_index(model, indices_to_unfreeze, architecture="efficientnet"):
     """
-    Unfreeze specific blocks of an EfficientNet model by their indices
+    Unfreeze specific blocks of a model by their indices
     
     Args:
-        model: The EfficientNet model
-        indices_to_unfreeze: List of block indices to unfreeze (0-6 for EfficientNetV2)
+        model: The model
+        indices_to_unfreeze: List of block indices to unfreeze
+        architecture: Model architecture type ('efficientnet' or 'mobilenet')
         
     Returns:
         model: The updated model
@@ -40,11 +41,18 @@ def unfreeze_layers_by_index(model, indices_to_unfreeze):
     for param in model.features.parameters():
         param.requires_grad = False
         
-    # Then unfreeze specified blocks
-    for block_idx in indices_to_unfreeze:
-        if 0 <= block_idx < len(model.features):
-            for param in model.features[block_idx].parameters():
-                param.requires_grad = True
+    if architecture == "mobilenet":
+        # For MobileNetV3, we unfreeze specific layers in the features module
+        for layer_idx in indices_to_unfreeze:
+            if 0 <= layer_idx < len(model.features):
+                for param in model.features[layer_idx].parameters():
+                    param.requires_grad = True
+    else:
+        # For EfficientNetV2, we unfreeze specific blocks
+        for block_idx in indices_to_unfreeze:
+            if 0 <= block_idx < len(model.features):
+                for param in model.features[block_idx].parameters():
+                    param.requires_grad = True
     
     return model
 
@@ -88,7 +96,7 @@ def get_parameter_stats(model):
         'layers': layer_stats
     }
 
-def setup_discriminative_learning_rates(model, base_lr=1e-4, backbone_multiplier=0.1):
+def setup_discriminative_learning_rates(model, base_lr=1e-4, backbone_multiplier=0.1, architecture="efficientnet"):
     """
     Set up discriminative learning rates - lower rates for backbone, higher for classifier
     
@@ -101,28 +109,130 @@ def setup_discriminative_learning_rates(model, base_lr=1e-4, backbone_multiplier
         optimizer: Configured optimizer with different learning rates
     """
     # Separate parameters into backbone and classifier
-    backbone_params = []
+    param_groups = []
+
+    if architecture == "mobilenet":
+        # MobileNetV3 features layers (organize into groups)
+        features_params = []
+        if len(model.features) >= 16:
+            # Divide features into 4 groups with increasingly higher learning rates
+            group_size = len(model.features) // 4
+            
+            for i in range(4):
+                start_idx = i * group_size
+                end_idx = (i + 1) * group_size if i < 3 else len(model.features)
+                group_params = []
+                
+                for j in range(start_idx, end_idx):
+                    for param in model.features[j].parameters():
+                        if param.requires_grad:
+                            group_params.append(param)
+                
+                if group_params:
+                    # Progressively higher learning rates for later layers
+                    lr_multiplier = backbone_multiplier * (1 + i * 0.5)
+                    param_groups.append({
+                        'params': group_params,
+                        'lr': base_lr * lr_multiplier
+                    })
+        else:
+            # For smaller models, just use two groups (early and late features)
+            early_params = []
+            late_params = []
+            mid_point = len(model.features) // 2
+            
+            for i in range(len(model.features)):
+                for param in model.features[i].parameters():
+                    if param.requires_grad:
+                        if i < mid_point:
+                            early_params.append(param)
+                        else:
+                            late_params.append(param)
+            
+            if early_params:
+                param_groups.append({
+                    'params': early_params,
+                    'lr': base_lr * backbone_multiplier
+                })
+            
+            if late_params:
+                param_groups.append({
+                    'params': late_params,
+                    'lr': base_lr * backbone_multiplier * 2
+                })
+    else:
+        # EfficientNetV2 features (organize by blocks)
+        if len(model.features) >= 7:
+            # Early blocks (0-2)
+            early_params = []
+            for i in range(min(3, len(model.features))):
+                for param in model.features[i].parameters():
+                    if param.requires_grad:
+                        early_params.append(param)
+            
+            # Middle blocks (3-4)
+            middle_params = []
+            for i in range(3, min(5, len(model.features))):
+                for param in model.features[i].parameters():
+                    if param.requires_grad:
+                        middle_params.append(param)
+            
+            # Late blocks (5-6)
+            late_params = []
+            for i in range(5, len(model.features)):
+                for param in model.features[i].parameters():
+                    if param.requires_grad:
+                        late_params.append(param)
+            
+            # Add parameter groups with increasingly higher learning rates
+            if early_params:
+                param_groups.append({
+                    'params': early_params,
+                    'lr': base_lr * backbone_multiplier
+                })
+            
+            if middle_params:
+                param_groups.append({
+                    'params': middle_params,
+                    'lr': base_lr * backbone_multiplier * 2
+                })
+            
+            if late_params:
+                param_groups.append({
+                    'params': late_params,
+                    'lr': base_lr * backbone_multiplier * 3
+                })
+        else:
+            # For smaller models or different structures
+            for param in model.features.parameters():
+                if param.requires_grad:
+                    features_params.append(param)
+            
+            if features_params:
+                param_groups.append({
+                    'params': features_params,
+                    'lr': base_lr * backbone_multiplier
+                })
+    
+    # Classifier parameters (highest learning rate)
     classifier_params = []
-    
-    for name, param in model.named_parameters():
+    for param in model.classifier.parameters():
         if param.requires_grad:
-            if 'features' in name:
-                backbone_params.append(param)
-            else:
-                classifier_params.append(param)
+            classifier_params.append(param)
     
-    # Create parameter groups with different learning rates
-    param_groups = [
-        {'params': backbone_params, 'lr': base_lr * backbone_multiplier},
-        {'params': classifier_params, 'lr': base_lr}
-    ]
+    if classifier_params:
+        param_groups.append({
+            'params': classifier_params,
+            'lr': base_lr
+        })
     
+    # Create optimizer with parameter groups
     return Adam(param_groups)
 
 def fine_tune_model(model, dataloaders, device, criterion=None, 
                     unfreeze_schedule=None, num_epochs=10,
                     base_lr=1e-4, backbone_lr_multiplier=0.1,
-                    patience=3, factor=0.5, min_lr=1e-6):
+                    patience=3, factor=0.5, min_lr=1e-6, architecture="efficientnet"):
     """
     Fine-tune a model with gradual unfreezing
     
@@ -151,12 +261,21 @@ def fine_tune_model(model, dataloaders, device, criterion=None,
     # Default unfreeze schedule if not provided (gradually unfreeze from top to bottom)
     if unfreeze_schedule is None:
         # For a 10-epoch schedule
-        unfreeze_schedule = {
-            0: [],            # Start with all frozen except classifier
-            int(num_epochs * 0.3): [6],  # Unfreeze last block at 30% of training
-            int(num_epochs * 0.5): [5, 6],  # Unfreeze blocks 5-6 at 50% of training
-            int(num_epochs * 0.7): [4, 5, 6]  # Unfreeze blocks 4-6 at 70% of training
-        }
+        if architecture == "mobilenet":
+            # For MobileNetV3 with 16 layers in features
+            unfreeze_schedule = {
+                0: [],                         # Start with all frozen except classifier
+                int(num_epochs * 0.3): list(range(12, 16)),  # Unfreeze last layers at 30% of training
+                int(num_epochs * 0.5): list(range(8, 16)),   # Unfreeze more layers at 50% of training
+                int(num_epochs * 0.7): list(range(4, 16))    # Unfreeze even more at 70% of training
+            }
+        else:
+            unfreeze_schedule = {
+                0: [],            # Start with all frozen except classifier
+                int(num_epochs * 0.3): [6],  # Unfreeze last block at 30% of training
+                int(num_epochs * 0.5): [5, 6],  # Unfreeze blocks 5-6 at 50% of training
+                int(num_epochs * 0.7): [4, 5, 6]  # Unfreeze blocks 4-6 at 70% of training
+            }
     
     # Initialize history dictionary to track metrics
     history = {
