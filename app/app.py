@@ -6,6 +6,7 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+from huggingface_hub import hf_hub_download
 
 # Add the project root to the path so we can import from src
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,9 +22,27 @@ st.set_page_config(
     layout="wide"
 )
 
+def load_model_from_hf(repo_id, filename):
+    """Load model from Hugging Face Hub."""
+    try:
+        # Download model file
+        model_path = hf_hub_download(
+            repo_id=repo_id,
+            filename=filename,
+        )
+        return model_path
+    except Exception as e:
+        st.error(f"Error downloading model: {str(e)}")
+        return None
+
 def find_model_paths():
     """Find all available model paths (local or remote)."""
     models = []
+
+    models.append((
+        "✨ HF Hosted Model", 
+        "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned:best_model_fine_tuned.pth"
+    ))
     
     # Look in outputs directory (local development)
     output_dir = "outputs"
@@ -65,8 +84,17 @@ def load_model(model_path):
         class_names = [f"Architectural Style {i+1}" for i in range(num_classes)]
         return model, device, class_names
     
+    # Hugging Face
+    if model_path.startswith("huggingface:"):
+        _, repo_id, filename = model_path.split(":")
+        local_path = load_model_from_hf(repo_id, filename)
+        if local_path:
+            model_path = local_path
+        else:
+            st.error("Failed to load model from Hugging Face")
+
     # Remote URL
-    if model_path.startswith(("http://", "https://")):
+    elif model_path.startswith(("http://", "https://")):
         st.info("Downloading model from remote location...")
         # Download to temp file
         import tempfile
@@ -178,7 +206,7 @@ def main():
     # Confidence threshold
     confidence_threshold = st.sidebar.slider(
         "Minimum confidence threshold (%)", 
-        0, 100, 10
+        0, 100, 90
     ) / 100.0
     
     # Load model

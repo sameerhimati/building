@@ -11,3 +11,4 @@ scikit-learn
 tqdm
 jupyter
 kaggle
+huggingface_hub
