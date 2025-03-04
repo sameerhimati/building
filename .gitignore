@@ -175,5 +175,6 @@ data/
 
 outputs
 
+.devcontainer
 
 .DS_Store
