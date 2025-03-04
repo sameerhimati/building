@@ -40,8 +40,8 @@ def find_model_paths():
     models = []
 
     models.append((
-        "✨ HF Hosted Model", 
-        "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned:best_model_fine_tuned.pth"
+        "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)", 
+        "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned/resolve/main/best_model_fine_tuned.pth"
     ))
     
     # Look in outputs directory (local development)
