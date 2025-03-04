@@ -55,10 +55,10 @@ def find_model_paths():
                     model_name
                 ))
 
-    models.append((
-        "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)", 
-        "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned/resolve/main/best_model_fine_tuned.pth"
-    ))
+    # models.append((
+    #     "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)", 
+    #     "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned/resolve/main/best_model_fine_tuned.pth"
+    # ))
     
     # Look in outputs directory (local development)
     output_dir = "outputs"
