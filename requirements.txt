@@ -12,3 +12,5 @@ tqdm
 jupyter
 kaggle
 huggingface_hub
+rawpy
+pillow_heif

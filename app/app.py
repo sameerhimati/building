@@ -43,6 +43,10 @@ def find_model_paths():
         "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)", 
         "https://huggingface.co/sameerhimati/architectural-style-classifier-EfficientNetFineTuned/resolve/main/best_model_fine_tuned.pth"
     ))
+    # models.append((
+    #     "🚀 Fine Tuned EfficientNetV2 Model (Hugging Face)",
+    #     "huggingface:sameerhimati/architectural-style-classifier-EfficientNetFineTuned:best_model_fine_tuned.pth"
+    # ))
     
     # Look in outputs directory (local development)
     output_dir = "outputs"
@@ -59,9 +63,6 @@ def find_model_paths():
                 
                 if os.path.exists(base_model_path):
                     models.append((run_dir, base_model_path))
-    
-    # Add remote models (for deployment)
-    # Example: models.append(("Production Model v1", "https://storage-url.com/model.pth"))
     
     # If no models found, add placeholder
     if not models:
@@ -95,18 +96,19 @@ def load_model(model_path):
 
     # Remote URL
     elif model_path.startswith(("http://", "https://")):
-        st.info("Downloading model from remote location...")
+
+        with st.spinner("Initializing..."):
         # Download to temp file
-        import tempfile
-        import requests
-        
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            response = requests.get(model_path, stream=True)
-            response.raise_for_status()
-            for chunk in response.iter_content(chunk_size=8192):
-                tmp.write(chunk)
+            import tempfile
+            import requests
             
-            checkpoint_path = tmp.name
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                response = requests.get(model_path, stream=True)
+                response.raise_for_status()
+                for chunk in response.iter_content(chunk_size=8192):
+                    tmp.write(chunk)
+                
+                checkpoint_path = tmp.name
     else:
         checkpoint_path = model_path
     
@@ -198,8 +200,9 @@ def main():
     model_path = model_options[selected_model_name]
     
     # Display model details
-    st.sidebar.caption(f"Path: {model_path}")
-    
+    with st.sidebar.expander("Technical Details", expanded=False):
+        st.write(f"**Model Path:** {model_path}")
+        
     # Number of predictions to show
     top_k = st.sidebar.slider("Number of predictions to show", 1, 5, 3)
     
@@ -225,7 +228,7 @@ def main():
         # File uploader
         uploaded_file = st.file_uploader(
             "Upload an image of a building", 
-            type=["jpg", "jpeg", "png"]
+            type=["jpg", "jpeg", "png", "dng", "heic", "heif"]
         )
         image_file = uploaded_file
         
@@ -237,8 +240,32 @@ def main():
     
     # Process image if available
     if image_file is not None:
-        # Display the image
-        image = Image.open(image_file)
+        try:
+            # Handle DNG and HEIC formats
+            file_extension = image_file.name.split('.')[-1].lower()
+            
+            if file_extension in ['heic', 'heif']:
+                # Using pillow-heif for HEIC support
+                import pillow_heif
+                pillow_heif.register_heif_opener()
+                image = Image.open(image_file)
+            elif file_extension == 'dng':
+                # Using rawpy for DNG support
+                import rawpy
+                import io
+                
+                raw_bytes = io.BytesIO(image_file.getvalue())
+                with rawpy.imread(raw_bytes) as raw:
+                    rgb = raw.postprocess()
+                    image = Image.fromarray(rgb)
+            else:
+                image = Image.open(image_file)
+
+        except Exception as e:
+            st.error(f"Error processing image: {str(e)}. Try converting to JPG or PNG.")
+            st.stop()
+
+        # Display image
         st.image(image, caption="Building Image", use_container_width=True)
         
         # Preprocess the image
